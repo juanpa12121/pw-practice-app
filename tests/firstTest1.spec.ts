@@ -56,3 +56,20 @@ test('Locating child elements', async ({ page }) => {
     //Elements by index
     await page.locator('nb-card').nth(3).getByRole('button').click();
 });
+
+test('Locating parent elements', async ({ page }) => {
+   await page.locator('nb-card', {hasText: 'Using the Grid'}).getByRole('textbox', {name: 'Email'}).click();
+   await page.locator('nb-card', {has: page.locator('#inputEmail1')}).getByRole('textbox', {name: 'Email'}).click();
+
+   await page.locator('nb-card').filter({hasText: "Basic Form"}).getByRole('textbox', {name: 'Email'}).click();
+   await page.locator('nb-card').filter({has: page.locator('.status-danger')}).getByRole('textbox', {name: 'Email'}).click();
+
+  await page.locator('nb-card').filter({has: page.locator('nb-checkbox')}).filter({hasText: "Sign in"})
+  .getByRole('textbox', {name: 'Email'}).click();
+//locator('..')Esto sube un nivel en el DOM. Es decir, accedes al elemento padre del elemento localizado.
+  await page.locator(':text-is("Using the Grid")').locator('..').getByRole('textbox', {name: 'Email'}).click();
+
+// Prefiere locator('selector', {has, hasText}) cuando puedes ubicar el elemento directamente.
+// Usa .filter() si ya tienes un conjunto de elementos y necesitas reducirlo.
+// Usa locator('..') si necesitas subir un nivel en el DOM desde un hijo bien definido.
+});

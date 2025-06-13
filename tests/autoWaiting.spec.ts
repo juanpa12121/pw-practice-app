@@ -14,6 +14,7 @@ test("Auto waiting", async ({ page }) => {
  // await successButton.waitFor({state: "attached"});
   //const text = await successButton.allTextContents();
   //expect(text).toContain('Data loaded with AJAX get request.')
+  //override timeout
   await expect(successButton).toHaveText('Data loaded with AJAX get request.', {timeout: 20000})
 });
 
@@ -31,4 +32,14 @@ test('Alternative waits', async({page}) =>{
 
   const text = await successButton.allTextContents();
   expect(text).toContain('Data loaded with AJAX get request.')
+});
+
+test('timeouts', async({page}) =>{
+  //test.setTimeout(10000)
+  //Cuando se llama a test.slow() dentro de una prueba, Playwright multiplica el tiempo de espera (test timeout) por un factor predeterminado, que suele ser 3 veces más.
+
+  test.slow();
+  const successButton = page.locator(".bg-success");
+  //override timeout
+  await successButton.click({timeout: 16000});
 })

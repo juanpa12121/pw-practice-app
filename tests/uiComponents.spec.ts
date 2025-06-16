@@ -66,48 +66,64 @@ test("checkboxes", async ({ page }) => {
   await page.getByText("Modal & Overlays").click();
   await page.getByText("Toastr").click();
 
-  await page.getByRole('checkbox', {name: "Hide on click"}).uncheck({force: true});
-  await page.getByRole('checkbox', {name: "Prevent arising of duplicate toast"}).check({force: true});
-  await page.getByRole('checkbox', {name: "Show toast with icon"}).uncheck({force: true});
+  await page
+    .getByRole("checkbox", { name: "Hide on click" })
+    .uncheck({ force: true });
+  await page
+    .getByRole("checkbox", { name: "Prevent arising of duplicate toast" })
+    .check({ force: true });
+  await page
+    .getByRole("checkbox", { name: "Show toast with icon" })
+    .uncheck({ force: true });
 
-  const allBoxes = page.getByRole('checkbox');
-  for(const box of await allBoxes.all()){
-    await box.uncheck({force: true});
-    expect(await box.isChecked()).toBeFalsy()
+  const allBoxes = page.getByRole("checkbox");
+  for (const box of await allBoxes.all()) {
+    await box.uncheck({ force: true });
+    expect(await box.isChecked()).toBeFalsy();
   }
 
-    for(const box of await allBoxes.all()){
-    await box.check({force: true});
+  for (const box of await allBoxes.all()) {
+    await box.check({ force: true });
     expect(await box.isChecked()).toBeTruthy();
   }
 });
 
-test('Lists and dropdowns', async ({ page }) => {
-  const dropDownMenu = page.locator('ngx-header nb-select');
+test("Lists and dropdowns", async ({ page }) => {
+  const dropDownMenu = page.locator("ngx-header nb-select");
   await dropDownMenu.click();
 
-  page.getByRole('list'); //When the list has a UL tag
-  page.getByRole('listitem'); //When the list has LI tag
+  page.getByRole("list"); //When the list has a UL tag
+  page.getByRole("listitem"); //When the list has LI tag
 
   //const optionList = page.getByRole('list').locator('nb-option');
-  const optionList = page.locator('nb-option-list nb-option');
-  await expect(optionList).toHaveText(['Light', 'Dark', 'Cosmic', 'Corporate']);
-  await optionList.filter({hasText: "Cosmic"}).click();
-  const header = page.locator('nb-layout-header');
-  await expect(header).toHaveCSS('background-color', 'rgb(50, 50, 89)');
+  const optionList = page.locator("nb-option-list nb-option");
+  await expect(optionList).toHaveText(["Light", "Dark", "Cosmic", "Corporate"]);
+  await optionList.filter({ hasText: "Cosmic" }).click();
+  const header = page.locator("nb-layout-header");
+  await expect(header).toHaveCSS("background-color", "rgb(50, 50, 89)");
 
   const colors = {
-    "Light": "rgb(255, 255, 255)",
-    "Dark": "rgb(34, 43, 69)",
-    "Cosmic": "rgb(50, 50, 89)",
-    "Corporate": "rgb(255, 255, 255)"
+    Light: "rgb(255, 255, 255)",
+    Dark: "rgb(34, 43, 69)",
+    Cosmic: "rgb(50, 50, 89)",
+    Corporate: "rgb(255, 255, 255)",
   };
 
-  for(const color in colors) {
+  for (const color in colors) {
     await dropDownMenu.click();
     await optionList.filter({ hasText: color }).click();
-    await expect(header).toHaveCSS('background-color', colors[color]);
+    await expect(header).toHaveCSS("background-color", colors[color]);
   }
+});
 
+test("Tooltips", async ({ page }) => {
+  await page.getByText("Modal & Overlays").click();
+  await page.getByText("Tooltip").click();
 
-})
+  const toolTipCard = page.locator("nb-card", { hasText: "Tooltip Placements" });
+  await toolTipCard.getByRole("button", { name: "Top" }).hover();
+
+  page.getByRole('tooltip'); //If you have a role tooltip created
+  const tooltip = await page.locator('nb-tooltip').textContent();
+  expect(tooltip).toEqual('This is a tooltip');
+});

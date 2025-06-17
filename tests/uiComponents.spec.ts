@@ -134,17 +134,48 @@ test("Dialog Box", async ({ page }) => {
   await page.getByText("Tables & Data").click();
   await page.getByText("Smart Table").click();
 
-  page.on('dialog', async dialog => {
+  page.on("dialog", async (dialog) => {
     expect(dialog.message()).toEqual("Are you sure you want to delete?");
     dialog.accept();
-  })
+  });
 
-  await page.getByRole("table").locator("tr", { hasText: "mdo@gmail.com" }).locator(".nb-trash").click();
-  await expect(page.locator("tbody tr").first()).not.toContainText("mdo@gmail.com");
+  await page
+    .getByRole("table")
+    .locator("tr", { hasText: "mdo@gmail.com" })
+    .locator(".nb-trash")
+    .click();
+  await expect(page.locator("tbody tr").first()).not.toContainText(
+    "mdo@gmail.com"
+  );
 
   const rows = page.locator("tbody tr");
-  for(const row of await rows.all()){
+  for (const row of await rows.all()) {
     await expect(row).not.toContainText("mdo@gmail.com");
   }
+});
 
+test("Web tables", async ({ page }) => {
+  await page.getByText("Tables & Data").click();
+  await page.getByText("Smart Table").click();
+
+  //1 get the row by any test in this row
+  const targetRow = page.getByRole("row", { name: "twitter@outlook.com" });
+  await targetRow.locator(".nb-edit").click();
+  await page.locator("input-editor").getByPlaceholder("Age").clear();
+  await page.locator("input-editor").getByPlaceholder("Age").fill("30");
+  await page.locator(".nb-checkmark").click();
+
+  //2 Get the row based on the value in the specific column
+  await page.getByRole("link", { name: "2" }).click();
+  await page.locator("span", { hasText: "2" }).first().click();
+  await page.locator("span.ng2-smart-page-link", { hasText: "2" }).click();
+
+  const targetRowById = page
+    .getByRole("row", { name: "11" })
+    .filter({ has: page.locator("td").nth(1).getByText("11") });
+  await targetRowById.locator(".nb-edit").click();
+  await page.locator("input-editor").getByPlaceholder("E-mail").clear();
+  await page.locator("input-editor").getByPlaceholder("E-mail").fill("test@test.com");
+  await page.locator(".nb-checkmark").click();
+  await expect(targetRowById.locator("td").nth(5)).toHaveText("test@test.com");
 });

@@ -42,4 +42,5 @@ test('timeouts', async({page}) =>{
   const successButton = page.locator(".bg-success");
   //override timeout
   await successButton.click({timeout: 16000});
-})
+});
+

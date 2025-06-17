@@ -185,17 +185,29 @@ test("Web tables", async ({ page }) => {
     await page.locator("input-filter").getByPlaceholder("Age").clear();
     // await page.locator("input-filter").getByPlaceholder("Age").fill(age);
     // await page.waitForTimeout(500);
-    await page.locator("input-filter").getByPlaceholder("Age").pressSequentially(age, {delay: 500});
+    await page.locator("input-filter").getByPlaceholder("Age").pressSequentially(age, { delay: 500 });
     const ageRows = page.locator("tbody tr");
 
-    for(let row of await ageRows.all()) {
+    for (let row of await ageRows.all()) {
       const cellValue = await row.locator("td").last().textContent();
-      if(age == "200"){
+      if (age == "200") {
         expect(await page.getByRole('table').textContent()).toContain("No data found");
-      }else{
+      } else {
         expect(cellValue).toEqual(age);
       }
     }
   }
 
 });
+
+test('Datepicker', async ({ page }) => {
+  await page.getByText("Forms").click();
+  await page.getByText("Datepicker").click();
+
+  const calendarInputField = page.getByPlaceholder("Form Picker");
+  await calendarInputField.click();
+  //The best way to select the dates in the date Picker is first to identify a unique locator that represent the list of the date cells that you want to select for the current month.
+  await page.locator('[class="day-cell ng-star-inserted"]').getByText("1", { exact: true }).click();
+  await expect(calendarInputField).toHaveValue("Jun 1, 2025");
+});
+

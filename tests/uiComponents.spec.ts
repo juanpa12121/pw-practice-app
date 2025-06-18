@@ -206,8 +206,27 @@ test('Datepicker', async ({ page }) => {
 
   const calendarInputField = page.getByPlaceholder("Form Picker");
   await calendarInputField.click();
+
+  let date = new Date();
+  date.setDate(date.getDate() + 200); // Set to tomorrow's date
+  const expectedDate = date.getDate().toString();
+
+  const expectedMonthShort = date.toLocaleString('En-US', { month: 'short' });
+  const expectedMonthLong = date.toLocaleString('En-US', { month: 'long' });
+  const expectedYear = date.getFullYear().toString();
+  const dateToAssert = `${expectedMonthShort} ${expectedDate}, ${expectedYear}`;
+
+  let calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent();
+  const expectedMonthAndYear = `${expectedMonthLong} ${expectedYear}`;
+  while(!calendarMonthAndYear.includes(expectedMonthAndYear)){
+    //Click on the next month button until the expected month and year is displayed
+    await page.locator('nb-calendar-pageable-navigation [data-name="chevron-right"]').click();
+    calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent();
+    //console.log(calendarMonthAndYear);
+  }
+  
   //The best way to select the dates in the date Picker is first to identify a unique locator that represent the list of the date cells that you want to select for the current month.
-  await page.locator('[class="day-cell ng-star-inserted"]').getByText("1", { exact: true }).click();
-  await expect(calendarInputField).toHaveValue("Jun 1, 2025");
+  await page.locator('[class="day-cell ng-star-inserted"]').getByText(expectedDate, { exact: true }).click();
+  await expect(calendarInputField).toHaveValue(dateToAssert);
 });
 

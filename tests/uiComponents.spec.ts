@@ -218,15 +218,45 @@ test('Datepicker', async ({ page }) => {
 
   let calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent();
   const expectedMonthAndYear = `${expectedMonthLong} ${expectedYear}`;
-  while(!calendarMonthAndYear.includes(expectedMonthAndYear)){
+  while (!calendarMonthAndYear.includes(expectedMonthAndYear)) {
     //Click on the next month button until the expected month and year is displayed
     await page.locator('nb-calendar-pageable-navigation [data-name="chevron-right"]').click();
     calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent();
     //console.log(calendarMonthAndYear);
   }
-  
+
   //The best way to select the dates in the date Picker is first to identify a unique locator that represent the list of the date cells that you want to select for the current month.
   await page.locator('[class="day-cell ng-star-inserted"]').getByText(expectedDate, { exact: true }).click();
   await expect(calendarInputField).toHaveValue(dateToAssert);
 });
+
+test('Sliders', async ({ page }) => {
+  //Update attibute
+  const tempGauge = page.locator('[tabtitle="Temperature"] ngx-temperature-dragger circle');
+  await tempGauge.evaluate(node => {
+    node.setAttribute('cx', '232.630');
+    node.setAttribute('cy', '232.630');
+  });
+  await tempGauge.click();
+  const tempBox = page.locator('[tabtitle="Temperature"] ngx-temperature-dragger');
+  await tempBox.scrollIntoViewIfNeeded();
+  await expect(tempBox).toContainText('30');
+
+  //Mouse movement
+  // const tempBox = page.locator('[tabtitle="Temperature"] ngx-temperature-dragger');
+  // await tempBox.scrollIntoViewIfNeeded();
+
+  // //define a bounding box
+  // const box = await tempBox.boundingBox();
+  // const x = box.x + box.width / 2; // Center of the box
+  // const y = box.y + box.height / 2; // Center of the box
+  // await page.mouse.move(x, y);
+  // await page.mouse.down();
+  // await page.mouse.move(x+100, y);
+  // await page.mouse.move(x+100, y+100);
+  // await page.mouse.up();
+  // await expect(tempBox).toContainText('30');
+
+});
+
 
